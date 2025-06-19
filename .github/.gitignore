@@ -1,0 +1,3 @@
+# Ignore workflow logs and temp files
+*.log
+*.tmp 
