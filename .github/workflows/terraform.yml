@@ -10,35 +10,39 @@ on:
 
 jobs:
   terraform-check:
-    name: Terraform Format Check
+    name: Terraform Format & Validate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v2
       - name: Terraform Format
         run: terraform fmt -check -recursive
+      - name: Terraform Validate
+        run: terraform validate
 
   terraform-plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
     needs: terraform-check
     steps:
-      - uses: actions/checkout@v4
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v2
       - name: Terraform Init
         run: terraform init
       - name: Terraform Plan
         run: terraform plan
+      - name: Terraform Output
+        run: terraform output || true
 
   terraform-apply:
     name: Terraform Apply
@@ -48,14 +52,16 @@ jobs:
     environment:
       name: production
     steps:
-      - uses: actions/checkout@v4
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v2
       - name: Terraform Init
         run: terraform init
       - name: Terraform Apply
-        run: terraform apply -auto-approve 
+        run: terraform apply -auto-approve
+      - name: Terraform Output
+        run: terraform output || true 
