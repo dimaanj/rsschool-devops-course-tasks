@@ -9,3 +9,7 @@ output "ssh_bastion" {
 output "ssh_private_from_bastion" {
   value = "ssh ec2-user@${aws_instance.private.private_ip}"
 }
+
+output "ssm_private_instance" {
+  value = "aws ssm start-session --target ${aws_instance.private.id}"
+}
