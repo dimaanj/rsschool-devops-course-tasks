@@ -10,7 +10,7 @@ resource "aws_vpc" "main" {
 resource "aws_subnet" "public_a" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.1.0/24"
-  availability_zone       = "us-east-1a"
+  availability_zone       = "${var.region}a"
   map_public_ip_on_launch = true
   tags = {
     Name = "public-subnet-a"
@@ -20,7 +20,7 @@ resource "aws_subnet" "public_a" {
 resource "aws_subnet" "public_b" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.2.0/24"
-  availability_zone       = "us-east-1b"
+  availability_zone       = "${var.region}b"
   map_public_ip_on_launch = true
   tags = {
     Name = "public-subnet-b"
@@ -30,7 +30,7 @@ resource "aws_subnet" "public_b" {
 resource "aws_subnet" "private_a" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.101.0/24"
-  availability_zone = "us-east-1a"
+  availability_zone = "${var.region}a"
   tags = {
     Name = "private-subnet-a"
   }
@@ -39,7 +39,7 @@ resource "aws_subnet" "private_a" {
 resource "aws_subnet" "private_b" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.102.0/24"
-  availability_zone = "us-east-1b"
+  availability_zone = "${var.region}b"
   tags = {
     Name = "private-subnet-b"
   }
@@ -66,6 +66,14 @@ resource "aws_security_group" "bastion_sg" {
     cidr_blocks = ["0.0.0.0/0"] // Replace with your IP for production
   }
 
+  # ingress {
+  #   description = "ICMP from private instances"
+  #   from_port   = -1
+  #   to_port     = -1
+  #   protocol    = "icmp"
+  #   security_groups = [aws_security_group.private_sg.id]
+  # }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -85,6 +93,14 @@ resource "aws_security_group" "private_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
+    security_groups = [aws_security_group.bastion_sg.id]
+  }
+
+  ingress {
+    description = "ICMP from bastion"
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
     security_groups = [aws_security_group.bastion_sg.id]
   }
 

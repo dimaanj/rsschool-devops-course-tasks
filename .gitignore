@@ -24,9 +24,6 @@ terraform.rc
 # Ignore sensitive variable files
 secrets.auto.tfvars
 
-# Ignore Terraform dependency lock files
-*.lock.hcl
-
 # Editor directories and files
 .vscode/
 .idea/
@@ -34,3 +31,5 @@ secrets.auto.tfvars
 *~
 .DS_Store
 Thumbs.db 
+
+*.pem

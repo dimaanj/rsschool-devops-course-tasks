@@ -6,4 +6,10 @@ variable "ami" {
 variable "type" {
   description = "Instance type"
   default     = "t2.micro"
-} 
+}
+
+variable "region" {
+  type        = string
+  default     = "us-east-1"
+  description = "AWS region"
+}
